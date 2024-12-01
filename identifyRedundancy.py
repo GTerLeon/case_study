@@ -4,6 +4,9 @@
 
 import networkx as nx
 import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler 
+
 
 def calculate_conditional_entropy_matrix(G):
     n = G.number_of_nodes()
@@ -29,8 +32,8 @@ def identifyRedundancy(G):
     A = np.zeros((n, n), dtype=int)
     for i in range(n):
         for j in range(n):
-            if HD[i,j] == 0:
-                A[i,j] = 1
+            # (idk should add this be here to avoid self-loops)  i != j:
+            A[i,j] = 1
     I = list(range(n))
     
     while I:
@@ -44,9 +47,11 @@ def identifyRedundancy(G):
         # there is at least one redundant variable with i
         if len(Si) > 1:
             for k in [x for x in Si if x != i]:
+                print(f"Removing edge ({k} -> {i})")
                 A[k,i] = 0  # no other node from the class can be parent of i
                 
                 for l in [x for x in Si if x not in [k, i]]:
+                    print(f"Removing edge ({l} -> {k})")
                     A[l,k] = 0 #nodes != i form the class Si cannot be connected
             
             for node in Si:
@@ -58,12 +63,60 @@ def identifyRedundancy(G):
     
     return A
 
-#test out on simple graph
-G = nx.DiGraph()
-G.add_edges_from([(0,1), (1,0), (1,2), (2,1)])  # 0 and 1 redundant variables
-A = identifyRedundancy(G)
-print(A)
+
+# #test out on simple graph
+# G = nx.DiGraph()
+# G.add_edges_from([(0,1), (1,0), (1,2), (2,1), (2,3), (3,2), (3,4)])  # 0 and 1 redundant variables
+# B =calculate_conditional_entropy_matrix(G)
+# print(B)
+# A = identifyRedundancy(G)
+# print(A)
+
+
 
 #load dataset iris
+iris_data = pd.read_csv("data/iris.csv")
+iris_data.columns = ['Feature1', 'Feature2', 'Feature3', 'Feature4', 'class']
+label_encoder = LabelEncoder()
+iris_data['class'] = label_encoder.fit_transform(iris_data['class'])
+
+scaler = MinMaxScaler()
+features = ['Feature1', 'Feature2', 'Feature3', 'Feature4'] 
+iris_data[features] = scaler.fit_transform(iris_data[features])
+
+#Create the graph and calculate conditional entropy matrix
+def calculate_pairwise_entropy(data):
+    n_features = data.shape[1]
+    entropy_matrix = np.zeros((n_features, n_features))
+    
+    for i in range(n_features):
+        for j in range(n_features):
+            if i != j:
+                # Conditional entropy calculation placeholder
+                # Replace with actual calculation of H(X_i | X_j)
+                entropy_matrix[i, j] = np.random.rand() 
+            else:
+                entropy_matrix[i, j] = 0  # Self-entropy is 0
+    return entropy_matrix
+
+# Compute the entropy matrix
+entropy_matrix = calculate_pairwise_entropy(iris_data[features])
+
+# Step 3: Create the graph based on the entropy matrix
+def create_graph_from_entropy(matrix, threshold=0.2):
+    n = matrix.shape[0]
+    G = nx.DiGraph()
+    for i in range(n):
+        for j in range(n):
+            if matrix[i, j] < threshold:  # Threshold for deterministic relationships
+                G.add_edge(j, i)  # Add edge based on entropy condition
+    return G
+
+graph = create_graph_from_entropy(entropy_matrix)
+
+# Step 4: Apply the identifyRedundancy algorithm
+redundancy_matrix = identifyRedundancy(graph)
 
 
+print("Redundancy Adjacency Matrix:")
+print(redundancy_matrix)
