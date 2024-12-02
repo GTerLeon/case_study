@@ -73,50 +73,48 @@ def identifyRedundancy(G):
 # print(A)
 
 
-
-#load dataset iris
+# Load and preprocess iris dataset
 iris_data = pd.read_csv("data/iris.csv")
 iris_data.columns = ['Feature1', 'Feature2', 'Feature3', 'Feature4', 'class']
 label_encoder = LabelEncoder()
 iris_data['class'] = label_encoder.fit_transform(iris_data['class'])
 
 scaler = MinMaxScaler()
-features = ['Feature1', 'Feature2', 'Feature3', 'Feature4'] 
+features = ['Feature1', 'Feature2', 'Feature3', 'Feature4']
 iris_data[features] = scaler.fit_transform(iris_data[features])
 
-#Create the graph and calculate conditional entropy matrix
-def calculate_pairwise_entropy(data):
-    n_features = data.shape[1]
-    entropy_matrix = np.zeros((n_features, n_features))
+G = nx.DiGraph()
+for i in range(len(features)):
+    G.add_node(i)
+
+A = identifyRedundancy(G)
+
+print(f"Adjacency matrix: \n", A)
+
+# Code MAI
+# #Create the graph and calculate conditional entropy matrix
+# def calculate_pairwise_entropy(data):
+#     n_features = data.shape[1]
+#     entropy_matrix = np.zeros((n_features, n_features))
     
-    for i in range(n_features):
-        for j in range(n_features):
-            if i != j:
-                # Conditional entropy calculation placeholder
-                # Replace with actual calculation of H(X_i | X_j)
-                entropy_matrix[i, j] = np.random.rand() 
-            else:
-                entropy_matrix[i, j] = 0  # Self-entropy is 0
-    return entropy_matrix
+#     for i in range(n_features):
+#         for j in range(n_features):
+#             if i != j:
+#                 # Conditional entropy calculation placeholder
+#                 # Replace with actual calculation of H(X_i | X_j)
+#                 entropy_matrix[i, j] = np.random.rand() 
+#             else:
+#                 entropy_matrix[i, j] = 0  # Self-entropy is 0
+#     return entropy_matrix
 
-# Compute the entropy matrix
-entropy_matrix = calculate_pairwise_entropy(iris_data[features])
-
-# Step 3: Create the graph based on the entropy matrix
-def create_graph_from_entropy(matrix, threshold=0.2):
-    n = matrix.shape[0]
-    G = nx.DiGraph()
-    for i in range(n):
-        for j in range(n):
-            if matrix[i, j] < threshold:  # Threshold for deterministic relationships
-                G.add_edge(j, i)  # Add edge based on entropy condition
-    return G
-
-graph = create_graph_from_entropy(entropy_matrix)
-
-# Step 4: Apply the identifyRedundancy algorithm
-redundancy_matrix = identifyRedundancy(graph)
+# # Step 3: Create the graph based on the entropy matrix
+# def create_graph_from_entropy(matrix, threshold=0.2):
+#     n = matrix.shape[0]
+#     G = nx.DiGraph()
+#     for i in range(n):
+#         for j in range(n):
+#             if matrix[i, j] < threshold:  # Threshold for deterministic relationships
+#                 G.add_edge(j, i)  # Add edge based on entropy condition
+#     return G
 
 
-print("Redundancy Adjacency Matrix:")
-print(redundancy_matrix)
