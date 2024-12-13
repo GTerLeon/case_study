@@ -6,7 +6,7 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler 
-
+from scipy.stats import entropy 
 
 def calculate_conditional_entropy_matrix(G):
     n = G.number_of_nodes()
@@ -63,12 +63,9 @@ def identifyRedundancy(G):
     
     return A
 
-
-# #test out on simple graph
+# # #test out on simple graph
 # G = nx.DiGraph()
 # G.add_edges_from([(0,1), (1,0), (1,2), (2,1), (2,3), (3,2), (3,4)])  # 0 and 1 redundant variables
-# B =calculate_conditional_entropy_matrix(G)
-# print(B)
 # A = identifyRedundancy(G)
 # print(A)
 
