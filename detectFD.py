@@ -37,37 +37,32 @@ def discover_functional_dependencies(cond_entropy_matrix, feature_names):
                 dependencies[feature].append(other_feature)
     return dependencies
 
-# #load and preprocess iris dataset
-# iris_df = pd.read_csv('data/iris.csv', header=None)
-# feature_names = ['sepal length', 'sepal width', 'petal length', 'petal width', 'species']
-# iris_df.columns = feature_names
+#load and preprocess iris dataset
+iris_df = pd.read_csv('data/iris.csv', header=None)
+feature_names = ['sepal length', 'sepal width', 'petal length', 'petal width', 'species']
+iris_df.columns = feature_names
 
-# #remove the species column for the entropy calculations
-# iris_features_df = iris_df.drop('species', axis=1)
-# feature_names = feature_names[:-1]
-
-
-# entropy_matrix = calculate_conditional_entropy_matrix(iris_features_df)
-# dependencies = discover_functional_dependencies(entropy_matrix, feature_names)
-
-# print("Conditional Entropy Matrix:")
-# print(pd.DataFrame(entropy_matrix, columns=feature_names, index=feature_names))
-# print("\nFunctional Dependencies:")
-# for key, value in dependencies.items():
-#     print(f"{key} <- {value}")
-
-G = pd.DataFrame({
-    'A': [1, 2, 3, 1, 2, 3],
-    'B': [10, 20, 30, 10, 20, 30]
-})
-
-feature_names = ['A', 'B']
-
-entropy_matrix = calculate_conditional_entropy_matrix(G)
+entropy_matrix = calculate_conditional_entropy_matrix(iris_df)
 dependencies = discover_functional_dependencies(entropy_matrix, feature_names)
 
-print("\nConditional Entropy Matrix:")
+print("Conditional Entropy Matrix:")
 print(pd.DataFrame(entropy_matrix, columns=feature_names, index=feature_names))
 print("\nFunctional Dependencies:")
 for key, value in dependencies.items():
     print(f"{key} <- {value}")
+
+# G = pd.DataFrame({
+#     'A': [1, 2, 3, 1, 2, 3],
+#     'B': [10, 20, 30, 10, 20, 30]
+# })
+
+# feature_names = ['A', 'B']
+
+# entropy_matrix = calculate_conditional_entropy_matrix(G)
+# dependencies = discover_functional_dependencies(entropy_matrix, feature_names)
+
+# print("\nConditional Entropy Matrix:")
+# print(pd.DataFrame(entropy_matrix, columns=feature_names, index=feature_names))
+# print("\nFunctional Dependencies:")
+# for key, value in dependencies.items():
+#     print(f"{key} <- {value}")
