@@ -11,7 +11,6 @@ def conditional_entropy(x, y):
     
     for y_val, p_y in y_marginals.items():
         p_x_given_y = joint_prob.loc[:, y_val] / p_y  #P(X|Y=y)
-        p_x_given_y = p_x_given_y[p_x_given_y > 0]
         cond_entropy += p_y * entropy(p_x_given_y, base=2)
     return cond_entropy
 
