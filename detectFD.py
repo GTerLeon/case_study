@@ -13,7 +13,7 @@ def conditional_entropy(x, y):
         p_x_given_y = joint_prob.loc[:, y_val] / p_y  #P(X|Y=y)
         cond_entropy += p_y * entropy(p_x_given_y, base=2)
     return cond_entropy
-
+    
 #calculate conditional entropy matrix for a given dataset
 def calculate_conditional_entropy_matrix(data):
     data = data.apply(LabelEncoder().fit_transform)
@@ -36,32 +36,24 @@ def discover_functional_dependencies(cond_entropy_matrix, feature_names):
                 dependencies[feature].append(other_feature)
     return dependencies
 
-#load and preprocess iris dataset
-iris_df = pd.read_csv('data/iris.csv', header=None)
-feature_names = ['sepal length', 'sepal width', 'petal length', 'petal width', 'species']
-iris_df.columns = feature_names
 
-entropy_matrix = calculate_conditional_entropy_matrix(iris_df)
+
+
+
+
+
+G = pd.DataFrame({
+    'A': [1, 2, 3, 1, 2, 3],
+    'B': [10, 20, 30, 10, 20, 30]
+})
+
+feature_names = ['A', 'B']
+
+entropy_matrix = calculate_conditional_entropy_matrix(G)
 dependencies = discover_functional_dependencies(entropy_matrix, feature_names)
 
-print("Conditional Entropy Matrix:")
+print("\nConditional Entropy Matrix:")
 print(pd.DataFrame(entropy_matrix, columns=feature_names, index=feature_names))
 print("\nFunctional Dependencies:")
 for key, value in dependencies.items():
     print(f"{key} <- {value}")
-
-# G = pd.DataFrame({
-#     'A': [1, 2, 3, 1, 2, 3],
-#     'B': [10, 20, 30, 10, 20, 30]
-# })
-
-# feature_names = ['A', 'B']
-
-# entropy_matrix = calculate_conditional_entropy_matrix(G)
-# dependencies = discover_functional_dependencies(entropy_matrix, feature_names)
-
-# print("\nConditional Entropy Matrix:")
-# print(pd.DataFrame(entropy_matrix, columns=feature_names, index=feature_names))
-# print("\nFunctional Dependencies:")
-# for key, value in dependencies.items():
-#     print(f"{key} <- {value}")
